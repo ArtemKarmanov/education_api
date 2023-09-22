@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 class Product(models.Model):
 	name = models.CharField(max_length=50)
 	owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='products')
+	students = models.ManyToManyField(User, related_name='availableProducts')
 
 
 # Урок используемый в продуктах
@@ -13,18 +14,13 @@ class Lesson(models.Model):
 	title = models.CharField(max_length=50)
 	link = models.TextField(null=True, blank=True)
 	duration = models.PositiveIntegerField(default=0)
-	product = models.ManyToManyField(Product, related_name='lessons')
-
-
-# Назначение доступа студентов к продуктам
-class Availability(models.Model):
-	student = models.ForeignKey(User, on_delete=models.CASCADE)
-	product = models.ForeignKey(Product, on_delete=models.CASCADE)
+	products = models.ManyToManyField(Product, related_name='lessons')
 
 
 # Статус просмотра уроков студентами
 class View(models.Model):
-	lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='view')
-	student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='view')
+	lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, related_name='views')
+	student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='views')
 	viewed = models.PositiveIntegerField(default=0)
 	status = models.BooleanField(default=False)
+	lastViewed = models.DateTimeField(null=True)
