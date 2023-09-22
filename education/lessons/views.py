@@ -41,6 +41,12 @@ class LessonsAPIView(ListAPIView):
 		for product in products:
 			for lesson in product.lessons.all():
 				view, created = lesson.views.get_or_create(student=user)
+
+				# Если просмотр урока у студента больше 80%, то статус "Просмотрено"
+				if view.viewed / lesson.duration * 100 >= 80:
+					view.status = True
+					view.save()
+
 				lesson.userInfo = view
 				result.append(lesson)
 
@@ -87,6 +93,12 @@ class ProductAPIView(ListAPIView):
 		result = list()
 		for lesson in product.lessons.all():
 			view = lesson.views.get(student=user_id)
+
+			# Если просмотр урока у студента больше 80%, то статус "Просмотрено"
+			if view.viewed / lesson.duration * 100 >= 80:
+				view.status = True
+				view.save()
+
 			lesson.userInfo = view
 			result.append(lesson)
 
